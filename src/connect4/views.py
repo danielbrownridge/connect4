@@ -1,11 +1,39 @@
 from django.shortcuts import render
+from django.views.generic import View
+from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
+from django.contrib.auth.models import User
 
-def index(request):
+from .forms import SignupForm
+
+class IndexView(View):
     template = 'connect4/index.html'
-    response = render(request, template) 
-    return response
+    context = {
+        'appname': 'Connect4',
+        'signup_text': 'Sign-up for an account',
+    }
+    def get(self, request):
+        return render(request, self.template, self.context)
 
-def signup(request):
+class SignupView(View):
     template = 'connect4/signup.html'
-    response = render(request, template)
-    return response
+    context = {
+        'signup_heading_text': 'Sign-up to play Connect4',
+        'input_label_submit': 'Sign up',
+        'cancel_text': 'cancel',
+    }
+    def get(self, request):
+        self.context['signup_form'] = SignupForm()
+        return render(request, self.template, self.context)
+    def post(self, request):
+        signup_form = SignupForm(request.POST)
+        if signup_form.is_valid():
+            username = signup_form.cleaned_data['username']
+            password = signup_form.cleaned_data['password']
+            user = User.objects.create_user(username, password=password)
+            return HttpResponseRedirect(reverse('connect4:login'))
+        self.context['signup_form'] = signup_form
+        return render(request, self.template, self.context)
+
+class LoginView(View):
+    pass

@@ -1,1 +1,11 @@
-<h1>Sign-up for Connect 4</h1>
+<h1>{{ signup_heading_text }}</h1>
+<form method="post">
+    {% csrf_token %}
+    <fieldset>
+    <table>
+    {{ signup_form }}
+    </table>
+</fieldset>
+    <input name="submit" type="submit" value="{{ input_label_submit }}" />
+</form>
+<a href="{% url 'connect4:index' %}">{{ cancel_text }}</a>

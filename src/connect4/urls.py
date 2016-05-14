@@ -4,6 +4,7 @@ from . import views
 
 app_name = 'connect4'
 urlpatterns = [
-    url(r'^$', views.index, name='index'),
-    url(r'^signup$', views.signup, name='signup'),
+    url(r'^$', views.IndexView.as_view(), name='index'),
+    url(r'^signup$', views.SignupView.as_view(), name='signup'),
+    url(r'^login$', views.LoginView.as_view(), name='login'),
 ]
