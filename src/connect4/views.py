@@ -1,7 +1,11 @@
-#from django.shortcuts import render
-from django.http import HttpResponse
+from django.shortcuts import render
 
 def index(request):
-    message = 'Connect4'
-    response = HttpResponse(message)
+    template = 'connect4/index.html'
+    response = render(request, template) 
+    return response
+
+def signup(request):
+    template = 'connect4/signup.html'
+    response = render(request, template)
     return response
