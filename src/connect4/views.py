@@ -4,8 +4,10 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.db.models import Q
 
 from .forms import SignupForm
+from .models import Game
 
 class IndexView(View):
     template = 'connect4/index.html'
@@ -44,4 +46,14 @@ class GamesView(LoginRequiredMixin, View):
         'games_heading_text': 'Play Connect 4',
     }
     def get(self, request):
+        active_list = Game.objects.filter(Q(player1=request.user) | Q(player2=request.user)
+                ).exclude(player2=None).exclude(finished=True)
+        waiting_list = Game.objects.filter(player1=request.user).filter(player2=None)
+        available_list = Game.objects.exclude(player1=request.user).filter(player2=None)
+        completed_list = Game.objects.filter(player1=request.user).filter(finished=True)
+
+        self.context['active_list'] = active_list
+        self.context['waiting_list'] = waiting_list
+        self.context['available_list'] = available_list
+        self.context['completed_list'] = completed_list
         return render(request, self.template, self.context)

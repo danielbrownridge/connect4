@@ -1,3 +1,109 @@
 <h1>{{ games_heading_text }}</h1>
 <h2>Welcome, {{ user.username }}!</h2>
+
+<h3>Start a game</h3>
+{% if waiting_list %}
+<p>You have already started a game. Waiting for an opponent</p>
+<ul>
+    {% for waiting_game in waiting_list %}
+    <li>{{ waiting_game.created }}</li>
+    {% endfor %}
+</ul>
+{% else %}
+<a href="">Create a new game</a>
+{% endif %}
+
+<h3>Join a game</h3>
+{% if available_list %}
+<p>Play a game another user has started.</p>
+<table>
+<thead>
+    <tr>
+    <th>opponent</th>
+    <th>created</th>
+    <th>join</th>
+    <tr>
+</thead>
+<tbody>
+    {% for available_game in available_list %}
+    <tr>
+    <td>{{ available_game.player1 }}</td>
+    <td>{{ available_game.created }}</td>
+    <td><a href="">play</a></td>
+    </tr>
+    {% endfor %}
+</tbody>
+</table>
+{% else %}
+    <p>No available games to join</p>
+{% endif %}
+
+<h3>Active games</h3>
+{% if active_list %}
+<p>Games you are currently participating in the following games</p>
+<table>
+<thead>
+    <tr>
+        <th>opponent</th>
+        <th>created</th>
+        <th>resume</th>
+    </tr>
+</thead>
+<tbody>
+{% for active_game in active_list %}
+<tr>
+    {% if user == active_game.player1 %}
+        <td>{{active_game.player2}}</td>
+    {% else %}
+        <td>{{active_game.player1}}</td>
+    {% endif %}
+    <td>{{active_game.created}}</td>
+    <td><a href="">resume</a></td>
+</tr>
+{% endfor %}
+</tbody>
+</table>
+{% else %}
+<p>You are not currently involved in any games.</p>
+<p>Either start a new game or join another users game.</p>
+{% endif %}
+
+<h3>Completed games</h3>
+{% if completed_list %}
+<table>
+    <thead>
+        <tr>
+            <th>Created</th>
+            <th>Opponent</th>
+            <th>Result</th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for completed_game in completed_list %}
+    <tr>
+        <td>{{ completed_game.created }}</td>
+        {% if user == completed_game.player1 %}
+            <td>{{completed_game.player2}}</td>
+        {% else %}
+            <td>{{completed_game.player1}}</td>
+        {% endif %}
+        
+        {% if completed_game.winner %}
+            {% if completed_game.winner == user %}
+                <td>Won</td>
+            {% else %}
+                <td>Lost</td>
+            {% endif %}
+        {% else %}
+            <td>Drawn</td>
+        {% endif %}
+
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>You don't have any completed games yet.</p>
+{% endif %} 
+
 <a href="{% url 'connect4:logout' %}?next={% url 'connect4:index' %}">logout</a>
