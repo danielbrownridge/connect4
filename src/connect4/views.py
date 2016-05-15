@@ -3,6 +3,7 @@ from django.views.generic import View
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
+from django.contrib.auth.mixins import LoginRequiredMixin
 
 from .forms import SignupForm
 
@@ -11,6 +12,7 @@ class IndexView(View):
     context = {
         'appname': 'Connect4',
         'signup_text': 'Sign-up for an account',
+        'games_text': 'Play!',
     }
     def get(self, request):
         return render(request, self.template, self.context)
@@ -35,5 +37,11 @@ class SignupView(View):
         self.context['signup_form'] = signup_form
         return render(request, self.template, self.context)
 
-class LoginView(View):
-    pass
+class GamesView(LoginRequiredMixin, View):
+    login_url = 'connect4:login'
+    template = 'connect4/games.html'
+    context = {
+        'games_heading_text': 'Play Connect 4',
+    }
+    def get(self, request):
+        return render(request, self.template, self.context)

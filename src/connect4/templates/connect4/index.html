@@ -1,2 +1,5 @@
 <h1>{{ appname }}</h1>
-<a href="{% url 'connect4:signup' %}">{{ signup_text }}</a>
+<ul>
+    <li><a href="{% url 'connect4:signup' %}">{{ signup_text }}</a></li>
+    <li><a href="{% url 'connect4:games' %}">{{ games_text }}</a></li>
+</ul>

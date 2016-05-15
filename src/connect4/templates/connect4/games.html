@@ -1,0 +1,3 @@
+<h1>{{ games_heading_text }}</h1>
+<h2>Welcome, {{ user.username }}!<h2>
+<a href="{% url 'connect4:logout' %}?next={% url 'connect4:login' %}">logout</a>
