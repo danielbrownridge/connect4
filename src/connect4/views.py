@@ -57,3 +57,10 @@ class GamesView(LoginRequiredMixin, View):
         self.context['available_list'] = available_list
         self.context['completed_list'] = completed_list
         return render(request, self.template, self.context)
+
+class PlayView(LoginRequiredMixin, View):
+    login_url = 'connect4:login'
+    template = 'connect4/play.html'
+    context = {}
+    def get(self, request, game):
+        pass

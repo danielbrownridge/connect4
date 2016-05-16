@@ -1,3 +1,6 @@
+{% extends "base.html" %}
+
+{% block content %}
 <h1>{{ signup_heading_text }}</h1>
 <form method="post">
     {% csrf_token %}
@@ -9,3 +12,4 @@
     <input name="submit" type="submit" value="{{ input_label_submit }}" />
 </form>
 <a href="{% url 'connect4:index' %}">{{ cancel_text }}</a>
+{% endblock %}

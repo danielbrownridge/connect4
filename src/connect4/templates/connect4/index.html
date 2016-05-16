@@ -1,5 +1,9 @@
+{% extends "base.html" %}
+
+{% block content %}
 <h1>{{ appname }}</h1>
 <ul>
     <li><a href="{% url 'connect4:signup' %}">{{ signup_text }}</a></li>
     <li><a href="{% url 'connect4:games' %}">{{ games_text }}</a></li>
 </ul>
+{% endblock %}
