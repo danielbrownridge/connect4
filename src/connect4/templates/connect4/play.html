@@ -32,16 +32,17 @@
 
     for ( i = 0; i < 7; i++ ) {
         x = i + x_offset;
-        var frame_geo = new THREE.BoxGeometry( 1, 6, 0.2, 1, 6 );
-        var frame_mat = new THREE.MeshPhongMaterial( {
+        var column_geo = new THREE.BoxGeometry( 1, 6, 0.2, 1, 6 );
+        var column_mat = new THREE.MeshPhongMaterial( {
             color: 0x0000ff,
             wireframe: true,
             wireframeLinewidth: 2
             });
-        var frame = new THREE.Mesh( frame_geo, frame_mat )
-        scene.add(frame)
-        frame.position.x = x
-        frame.position.y = 0.5
+        var frame_column = new THREE.Mesh( column_geo, column_mat )
+        frame_column.position.x = x
+        frame_column.position.y = 0.5
+        frame_column.column = i
+        scene.add(frame_column)
     }
 
     function position_coin(x, y, coin) {
@@ -75,26 +76,61 @@
     }
 
     function add_moves(moves) {
-        for ( i = 0; i < moves.length; i++ ) {
+        for ( var i = 0; i < moves.length; i++ ) {
             player = i % 2;
             add_coin(moves[i], player)
         }
     }
 
-    add_moves([0,0,0,1,2,2,3,4,5,3,2,3,2])
+    add_moves([0,0,0,1,2,2,3,4,5,3,2,3,2,0,0,0])
 
-
-    function onDocumentMouseMove( event ) {
-        event.preventDefault();
+    function onMouseMove( event ) {
+        event.preventDefault()
         mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
         mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
     }
 
+    function onMouseClick( event ) {
+        event.preventDefault()
+        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+        mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+        raycaster.setFromCamera( mouse, camera, 0, 1 );
+        var intersects = raycaster.intersectObjects( scene.children );
+        if (intersects.length > 0) {
+            add_coin(intersects[0].object.column, true);
+        }
+    }
+
+    var intersected;
     var render = function () {
         requestAnimationFrame( render );
+        // HACK! if mouse is exactly at 0,0 assume it is acutally off screen
+        if ( mouse.x != 0 && mouse.y != 0 ) {
+            raycaster.setFromCamera( mouse, camera, 0, 1 );
+            var intersects = raycaster.intersectObjects( scene.children );
+            if (intersects.length > 0) {
+                if ( intersected != intersects[ 0 ].object ) {
+                    if ( intersected ) {
+                        intersected.material.color.set(intersected.currentColor);
+                    }
+                    intersected = intersects[ 0 ].object;
+                    intersected.currentColor = intersected.material.color.getHex();
+                    intersected.material.color.set( 0xff0000 );
+                }
+                console.log(mouse);
+                console.log(intersects[ 0 ].object);
+            } else {
+                if ( intersected ) {
+                    intersected.material.color.set(intersected.currentColor);
+                }
+                intersected = null
+            }
+        }
         renderer.render( scene, camera );
     };
 
+    window.addEventListener( 'mousemove', onMouseMove, false );
+    window.addEventListener( 'mousedown', onMouseClick, false );
     render();
 </script>
 {% endblock %}
