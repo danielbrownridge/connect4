@@ -130,6 +130,7 @@ STATICFILES_FINDERS = [
 ]
 BOWER_COMPONENTS_ROOT = os.path.join(BASE_DIR, 'components')
 BOWER_INSTALLED_APPS = (
+        'js-cookie',
         'threejs',
         'jquery',
 )
