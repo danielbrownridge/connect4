@@ -3,98 +3,98 @@
 
 {% block content %}
 <h1>It's play time</h1>
-        <script>
-            var x_offset = -3
-            var y_offset = -2
+<script>
+    var x_offset = -3
+    var y_offset = -2
 
-            var aspect_ratio = window.innerWidth / window.innerHeight
-            var scene = new THREE.Scene();
-            var camera = new THREE.PerspectiveCamera( 80, aspect_ratio, 0.1, 1000 );
-            var raycaster = new THREE.Raycaster();
-            var mouse = new THREE.Vector2();
+    var aspect_ratio = window.innerWidth / window.innerHeight
+    var scene = new THREE.Scene();
+    var camera = new THREE.PerspectiveCamera( 80, aspect_ratio, 0.1, 1000 );
+    var raycaster = new THREE.Raycaster();
+    var mouse = new THREE.Vector2();
 
-            var light = new THREE.AmbientLight( 0x808080 ); 
-            scene.add( light )
+    var light = new THREE.AmbientLight( 0x808080 ); 
+    scene.add( light )
 
-            var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.6 );
-            directionalLight.position.set( 0, 1, 0 );
-            scene.add( directionalLight );
+    var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.6 );
+    directionalLight.position.set( 0, 1, 0 );
+    scene.add( directionalLight );
 
-            var pointLight = new THREE.PointLight( 0xffffff, 1.5 );
-            pointLight.position.set( 0, 100, 90 );
-            scene.add( pointLight );
+    var pointLight = new THREE.PointLight( 0xffffff, 1.5 );
+    pointLight.position.set( 0, 100, 90 );
+    scene.add( pointLight );
 
-            var renderer = new THREE.WebGLRenderer({ alpha: true });
-            renderer.setSize( window.innerWidth, window.innerHeight );
-            document.body.appendChild( renderer.domElement );
+    var renderer = new THREE.WebGLRenderer({ alpha: true });
+    renderer.setSize( window.innerWidth, window.innerHeight );
+    document.body.appendChild( renderer.domElement );
 
-            camera.position.z = 5;
+    camera.position.z = 5;
 
-            for ( i = 0; i < 7; i++ ) {
-                x = i + x_offset;
-                var frame_geo = new THREE.BoxGeometry( 1, 6, 0.2, 1, 6 );
-                var frame_mat = new THREE.MeshPhongMaterial( {
-                    color: 0x0000ff,
-                    wireframe: true,
-                    wireframeLinewidth: 2
-                    });
-                var frame = new THREE.Mesh( frame_geo, frame_mat )
-                scene.add(frame)
-                frame.position.x = x
-                frame.position.y = 0.5
-            }
+    for ( i = 0; i < 7; i++ ) {
+        x = i + x_offset;
+        var frame_geo = new THREE.BoxGeometry( 1, 6, 0.2, 1, 6 );
+        var frame_mat = new THREE.MeshPhongMaterial( {
+            color: 0x0000ff,
+            wireframe: true,
+            wireframeLinewidth: 2
+            });
+        var frame = new THREE.Mesh( frame_geo, frame_mat )
+        scene.add(frame)
+        frame.position.x = x
+        frame.position.y = 0.5
+    }
 
-            function position_coin(x, y, coin) {
-                coin.position.x = x + x_offset;
-                coin.position.y = y + y_offset;
-            }
+    function position_coin(x, y, coin) {
+        coin.position.x = x + x_offset;
+        coin.position.y = y + y_offset;
+    }
 
-            function make_coin(player) {
-                var colour
-                if (player) {
-                    color = 0xff0000
-                } else {
-                    color = 0xffff00
-                }
-                var geometry = new THREE.CylinderGeometry( 0.45, 0.45, 0.1, 32);
-                var material = new THREE.MeshPhongMaterial( { color: color, shininess: 100 } );
-                var coin = new THREE.Mesh( geometry, material );
-                scene.add( coin );
-                coin.rotateX(0.5 * Math.PI);
-                return coin;
-            }
+    function make_coin(player) {
+        var colour
+        if (player) {
+            color = 0xff0000
+        } else {
+            color = 0xffff00
+        }
+        var geometry = new THREE.CylinderGeometry( 0.45, 0.45, 0.1, 32);
+        var material = new THREE.MeshPhongMaterial( { color: color, shininess: 100 } );
+        var coin = new THREE.Mesh( geometry, material );
+        scene.add( coin );
+        coin.rotateX(0.5 * Math.PI);
+        return coin;
+    }
 
-            var board = [[],[],[],[],[],[],[]]
+    var board = [[],[],[],[],[],[],[]]
 
-            function add_coin(column, player) {
-                coin = make_coin(player);
-                board[column].push(player);
-                x = column;
-                y = board[column].length - 1;
-                position_coin( x, y, coin );
-            }
+    function add_coin(column, player) {
+        coin = make_coin(player);
+        board[column].push(player);
+        x = column;
+        y = board[column].length - 1;
+        position_coin( x, y, coin );
+    }
 
-            function add_moves(moves) {
-                for ( i = 0; i < moves.length; i++ ) {
-                    player = i % 2;
-                    add_coin(moves[i], player)
-                }
-            }
+    function add_moves(moves) {
+        for ( i = 0; i < moves.length; i++ ) {
+            player = i % 2;
+            add_coin(moves[i], player)
+        }
+    }
 
-            add_moves([0,0,0,1,2,2,3,4,5,3,2,3,2])
+    add_moves([0,0,0,1,2,2,3,4,5,3,2,3,2])
 
 
-            function onDocumentMouseMove( event ) {
-                event.preventDefault();
-                mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
-                mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
-            }
+    function onDocumentMouseMove( event ) {
+        event.preventDefault();
+        mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
+        mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
+    }
 
-            var render = function () {
-                requestAnimationFrame( render );
-                renderer.render( scene, camera );
-            };
+    var render = function () {
+        requestAnimationFrame( render );
+        renderer.render( scene, camera );
+    };
 
-            render();
-        </script>
+    render();
+</script>
 {% endblock %}
