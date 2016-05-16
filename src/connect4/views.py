@@ -72,11 +72,22 @@ class GameDataView(LoginRequiredMixin, View):
             }
         except Game.DoesNotExist:
             json = {}
-        return JsonResponse(json)
+        return JsonResponse( json )
+    def post(self, request, game_id):
+        try: 
+            game = Game.objects.get(id=game_id)
+            moves = request.POST.getlist('moves[]')
+            game.moves = moves
+            game.save()
+            return JsonResponse( {"result":"success"} )
+        except Game.DoesNotExist:
+            return JsonResponse( {"result":"failure"} )
+
 
 class PlayView(LoginRequiredMixin, View):
     login_url = 'connect4:login'
     template = 'connect4/play.html'
     context = {}
     def get(self, request, game_id):
+        self.context['game_id'] = game_id
         return render(request, self.template, self.context)

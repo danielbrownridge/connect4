@@ -2,6 +2,7 @@
 {% block title %}Play Connect4{% endblock %}
 
 {% block content %}
+
 <h1>It's play time</h1>
 <script>
     var moves;
@@ -108,6 +109,11 @@
             column = intersects[0].object.column;
             if(add_coin(column, true)) {
                 moves.push(column);
+                data = {
+                    'moves': moves,
+                }
+                $.post( "{% url 'connect4:game-data' game_id %}", data, function( response ) {
+                });
             }
         }
     }
@@ -143,7 +149,20 @@
     render();
 
     $( document ).ready(function() {
-        $.get( "/connect4/game/3/data/", function( response ) { 
+        var csrftoken = Cookies.get('csrftoken');
+        console.log(csrftoken)
+        function csrfSafeMethod(method) {
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+        $.ajaxSetup({
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type) && !this.crossDomain) {
+                    xhr.setRequestHeader("X-CSRFToken", csrftoken);
+                }
+            }
+        });
+
+        $.get( "{% url 'connect4:game-data' game_id %}", function( response ) { 
             moves = response.moves;
             add_moves(moves);
         });
