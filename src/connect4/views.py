@@ -66,6 +66,9 @@ class GameDataView(LoginRequiredMixin, View):
                 player = 0
             else:
                 player = 1
+                if game.player2 is None:
+                    game.player2 = request.user
+                    game.save()
             json = {
                 'moves': game.moves,
                 'player': player,
