@@ -4,6 +4,12 @@
 {% block content %}
 <h1>It's play time</h1>
 <script>
+    var COLUMNS = 7;
+    var ROWS = 6;
+    const RED = 0xff0000;
+    const YELLOW = 0xffff00;
+    const GREEN = 0x00ff00;
+    const BLUE = 0x0000ff;
     var x_offset = -3
     var y_offset = -2
 
@@ -16,12 +22,8 @@
     var light = new THREE.AmbientLight( 0x808080 ); 
     scene.add( light )
 
-    var directionalLight = new THREE.DirectionalLight( 0xffffff, 0.6 );
-    directionalLight.position.set( 0, 1, 0 );
-    scene.add( directionalLight );
-
-    var pointLight = new THREE.PointLight( 0xffffff, 1.5 );
-    pointLight.position.set( 0, 100, 90 );
+    var pointLight = new THREE.PointLight( 0xffffff, 1 );
+    pointLight.position.set( 1, 1, 1 );
     scene.add( pointLight );
 
     var renderer = new THREE.WebGLRenderer({ alpha: true });
@@ -30,11 +32,11 @@
 
     camera.position.z = 5;
 
-    for ( i = 0; i < 7; i++ ) {
+    for ( i = 0; i < COLUMNS; i++ ) {
         x = i + x_offset;
-        var column_geo = new THREE.BoxGeometry( 1, 6, 0.2, 1, 6 );
+        var column_geo = new THREE.BoxGeometry( 1, ROWS, 0.2, 1, ROWS );
         var column_mat = new THREE.MeshPhongMaterial( {
-            color: 0x0000ff,
+            color: BLUE,
             wireframe: true,
             wireframeLinewidth: 2
             });
@@ -53,9 +55,9 @@
     function make_coin(player) {
         var colour
         if (player) {
-            color = 0xff0000
+            color = RED 
         } else {
-            color = 0xffff00
+            color = YELLOW
         }
         var geometry = new THREE.CylinderGeometry( 0.45, 0.45, 0.1, 32);
         var material = new THREE.MeshPhongMaterial( { color: color, shininess: 100 } );
@@ -68,11 +70,15 @@
     var board = [[],[],[],[],[],[],[]]
 
     function add_coin(column, player) {
-        coin = make_coin(player);
-        board[column].push(player);
-        x = column;
-        y = board[column].length - 1;
-        position_coin( x, y, coin );
+        console.log(board[column].length)
+        console.log(ROWS)
+        if (board[column].length < ROWS) {
+            coin = make_coin(player);
+            board[column].push(player);
+            x = column;
+            y = board[column].length - 1;
+            position_coin( x, y, coin );
+        }
     }
 
     function add_moves(moves) {
@@ -82,7 +88,7 @@
         }
     }
 
-    add_moves([0,0,0,1,2,2,3,4,5,3,2,3,2,0,0,0])
+    add_moves([])
 
     function onMouseMove( event ) {
         event.preventDefault()
@@ -103,7 +109,6 @@
 
     var intersected;
     var render = function () {
-        requestAnimationFrame( render );
         // HACK! if mouse is exactly at 0,0 assume it is acutally off screen
         if ( mouse.x != 0 && mouse.y != 0 ) {
             raycaster.setFromCamera( mouse, camera, 0, 1 );
@@ -115,10 +120,10 @@
                     }
                     intersected = intersects[ 0 ].object;
                     intersected.currentColor = intersected.material.color.getHex();
-                    intersected.material.color.set( 0xff0000 );
+                    intersected.material.color.set( GREEN );
                 }
-                console.log(mouse);
-                console.log(intersects[ 0 ].object);
+                //console.log(mouse);
+                //console.log(intersects[ 0 ].object);
             } else {
                 if ( intersected ) {
                     intersected.material.color.set(intersected.currentColor);
@@ -127,6 +132,7 @@
             }
         }
         renderer.render( scene, camera );
+        requestAnimationFrame( render );
     };
 
     window.addEventListener( 'mousemove', onMouseMove, false );
