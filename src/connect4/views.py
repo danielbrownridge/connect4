@@ -1,6 +1,6 @@
 from django.shortcuts import render
 from django.views.generic import View
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, JsonResponse
 from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.contrib.auth.mixins import LoginRequiredMixin
@@ -58,9 +58,25 @@ class GamesView(LoginRequiredMixin, View):
         self.context['completed_list'] = completed_list
         return render(request, self.template, self.context)
 
+class GameDataView(LoginRequiredMixin, View):
+    def get(self, request, game_id):
+        try:
+            game = Game.objects.get(id=game_id)
+            if request.user == game.player1:
+                player = 'true'
+            else:
+                player = 'false'
+            json = {
+                'moves': game.moves,
+                'player': player,
+            }
+        except Game.DoesNotExist:
+            json = {}
+        return JsonResponse(json)
+
 class PlayView(LoginRequiredMixin, View):
     login_url = 'connect4:login'
     template = 'connect4/play.html'
     context = {}
-    def get(self, request, game):
+    def get(self, request, game_id):
         return render(request, self.template, self.context)
