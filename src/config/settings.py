@@ -38,6 +38,7 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'djangobower',
 ]
 
 MIDDLEWARE_CLASSES = [
@@ -120,4 +121,12 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 STATIC_URL = '/static/'
+STATICFILES_FINDERS = [
+    'djangobower.finders.BowerFinder',
+]
+BOWER_COMPONENTS_ROOT = os.path.join(BASE_DIR, 'components')
+BOWER_INSTALLED_APPS = (
+        'threejs',
+)
