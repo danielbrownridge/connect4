@@ -112,8 +112,16 @@
             if(user == turn) {
                 if(add_coin(column, user)) {
                     moves.push(column);
+                    console.log(moves.length)
+                    if(moves.length == 7 * 6) {
+                        finished = true;
+                        alert('Draw!');
+                    } else {
+                        finished = false;
+                    }
                     data = {
                         'moves': moves,
+                        'finished': finished,
                     }
                     $.post( "{% url 'connect4:game-data' game_id %}", data, function( response ) {
                     });
@@ -168,7 +176,7 @@
                 add_coin(moves[moves.length - 1], player);
             }
         });
-        setTimeout( pollGameData, 5000 );
+        setTimeout( pollGameData, 3000 );
     }
 
     $( document ).ready(function() {

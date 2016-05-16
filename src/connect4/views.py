@@ -46,11 +46,10 @@ class GamesView(LoginRequiredMixin, View):
         'games_heading_text': 'Play Connect 4',
     }
     def get(self, request):
-        active_list = Game.objects.filter(Q(player1=request.user) | Q(player2=request.user)
-                ).exclude(player2=None).exclude(finished=True)
+        active_list = Game.objects.filter(Q(player1=request.user) | Q(player2=request.user)).exclude(player2=None).exclude(finished=True)
         waiting_list = Game.objects.filter(player1=request.user).filter(player2=None)
         available_list = Game.objects.exclude(player1=request.user).filter(player2=None)
-        completed_list = Game.objects.filter(player1=request.user).filter(finished=True)
+        completed_list = Game.objects.filter(Q(player1=request.user) | Q(player2=request.user)).filter(finished=True)
 
         self.context['active_list'] = active_list
         self.context['waiting_list'] = waiting_list
@@ -81,6 +80,8 @@ class GameDataView(LoginRequiredMixin, View):
             game = Game.objects.get(id=game_id)
             moves = request.POST.getlist('moves[]')
             game.moves = moves
+            if request.POST.get('finished') == 'true':
+                game.finished = True
             game.save()
             return JsonResponse( {"result":"success"} )
         except Game.DoesNotExist:
