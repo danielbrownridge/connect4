@@ -4,6 +4,8 @@
 {% block content %}
 <h1>It's play time</h1>
 <script>
+    var moves;
+    var turn;
     var COLUMNS = 7;
     var ROWS = 6;
     const RED = 0xff0000;
@@ -70,14 +72,15 @@
     var board = [[],[],[],[],[],[],[]]
 
     function add_coin(column, player) {
-        console.log(board[column].length)
-        console.log(ROWS)
         if (board[column].length < ROWS) {
             coin = make_coin(player);
             board[column].push(player);
             x = column;
             y = board[column].length - 1;
             position_coin( x, y, coin );
+            return true;
+        } else {
+            return false;
         }
     }
 
@@ -88,8 +91,6 @@
         }
     }
 
-    add_moves([])
-
     function onMouseMove( event ) {
         event.preventDefault()
         mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
@@ -97,13 +98,17 @@
     }
 
     function onMouseClick( event ) {
-        event.preventDefault()
+        event.preventDefault();
         mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
         mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
         raycaster.setFromCamera( mouse, camera, 0, 1 );
         var intersects = raycaster.intersectObjects( scene.children );
         if (intersects.length > 0) {
-            add_coin(intersects[0].object.column, true);
+            console.log(moves);
+            column = intersects[0].object.column;
+            if(add_coin(column, true)) {
+                moves.push(column);
+            }
         }
     }
 
@@ -122,8 +127,6 @@
                     intersected.currentColor = intersected.material.color.getHex();
                     intersected.material.color.set( GREEN );
                 }
-                //console.log(mouse);
-                //console.log(intersects[ 0 ].object);
             } else {
                 if ( intersected ) {
                     intersected.material.color.set(intersected.currentColor);
@@ -138,5 +141,13 @@
     window.addEventListener( 'mousemove', onMouseMove, false );
     window.addEventListener( 'mousedown', onMouseClick, false );
     render();
+
+    $( document ).ready(function() {
+        $.get( "/connect4/game/3/data/", function( response ) { 
+            moves = response.moves;
+            add_moves(moves);
+        });
+    });
+
 </script>
 {% endblock %}
