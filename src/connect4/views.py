@@ -63,9 +63,9 @@ class GameDataView(LoginRequiredMixin, View):
         try:
             game = Game.objects.get(id=game_id)
             if request.user == game.player1:
-                player = 'true'
+                player = 0
             else:
-                player = 'false'
+                player = 1
             json = {
                 'moves': game.moves,
                 'player': player,

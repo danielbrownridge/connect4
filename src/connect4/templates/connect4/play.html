@@ -5,7 +5,8 @@
 
 <h1>It's play time</h1>
 <script>
-    var moves;
+    var moves = [];
+    var user;
     var turn;
     var COLUMNS = 7;
     var ROWS = 6;
@@ -86,6 +87,8 @@
     }
 
     function add_moves(moves) {
+        console.log('adding moves');
+        console.log(moves);
         for ( var i = 0; i < moves.length; i++ ) {
             player = i % 2;
             add_coin(moves[i], player)
@@ -107,13 +110,21 @@
         if (intersects.length > 0) {
             console.log(moves);
             column = intersects[0].object.column;
-            if(add_coin(column, true)) {
-                moves.push(column);
-                data = {
-                    'moves': moves,
+            
+            turn = moves.length % 2;
+            console.log(turn);
+            console.log(user)
+            console.log(user == turn);
+
+            if(user == turn) {
+                if(add_coin(column, user)) {
+                    moves.push(column);
+                    data = {
+                        'moves': moves,
+                    }
+                    $.post( "{% url 'connect4:game-data' game_id %}", data, function( response ) {
+                    });
                 }
-                $.post( "{% url 'connect4:game-data' game_id %}", data, function( response ) {
-                });
             }
         }
     }
@@ -148,6 +159,27 @@
     window.addEventListener( 'mousedown', onMouseClick, false );
     render();
 
+    var pollGameData = function () {
+        $.get( "{% url 'connect4:game-data' game_id %}", function( response ) { 
+            if (moves.length == 0) {
+                console.log(response);
+                moves = response.moves;
+                user = response.player;
+                add_moves(moves);
+            } else if (moves.length < response.moves.length) {
+                moves = response.moves;
+                console.log(player);
+                if ( user == 0 ) {
+                    player = 1;
+                } else {
+                    player = 0;
+                }
+                add_coin(moves[moves.length - 1], player);
+            }
+        });
+        setTimeout( pollGameData, 5000 );
+    }
+
     $( document ).ready(function() {
         var csrftoken = Cookies.get('csrftoken');
         console.log(csrftoken)
@@ -162,10 +194,7 @@
             }
         });
 
-        $.get( "{% url 'connect4:game-data' game_id %}", function( response ) { 
-            moves = response.moves;
-            add_moves(moves);
-        });
+        pollGameData();
     });
 
 </script>
