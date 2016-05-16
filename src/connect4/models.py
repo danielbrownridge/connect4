@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.postgres.fields import ArrayField
 from django.contrib.auth.models import User
 
 class Game(models.Model):
@@ -9,6 +10,7 @@ class Game(models.Model):
             blank=True, null=True)
     finished = models.BooleanField()
     created = models.DateTimeField(auto_now_add=True)
+    moves = ArrayField(models.IntegerField(), size=42, default=list)
 
     def __str__(self):
         time_player1 = str(self.created.strftime('%Y-%m-%d %H:%M:%S')) + \
