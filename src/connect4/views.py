@@ -63,4 +63,4 @@ class PlayView(LoginRequiredMixin, View):
     template = 'connect4/play.html'
     context = {}
     def get(self, request, game):
-        pass
+        return render(request, self.template, self.context)
