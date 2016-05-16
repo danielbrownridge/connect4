@@ -87,8 +87,6 @@
     }
 
     function add_moves(moves) {
-        console.log('adding moves');
-        console.log(moves);
         for ( var i = 0; i < moves.length; i++ ) {
             player = i % 2;
             add_coin(moves[i], player)
@@ -108,14 +106,9 @@
         raycaster.setFromCamera( mouse, camera, 0, 1 );
         var intersects = raycaster.intersectObjects( scene.children );
         if (intersects.length > 0) {
-            console.log(moves);
             column = intersects[0].object.column;
             
             turn = moves.length % 2;
-            console.log(turn);
-            console.log(user)
-            console.log(user == turn);
-
             if(user == turn) {
                 if(add_coin(column, user)) {
                     moves.push(column);
@@ -162,13 +155,11 @@
     var pollGameData = function () {
         $.get( "{% url 'connect4:game-data' game_id %}", function( response ) { 
             if (moves.length == 0) {
-                console.log(response);
                 moves = response.moves;
                 user = response.player;
                 add_moves(moves);
             } else if (moves.length < response.moves.length) {
                 moves = response.moves;
-                console.log(player);
                 if ( user == 0 ) {
                     player = 1;
                 } else {
@@ -182,7 +173,6 @@
 
     $( document ).ready(function() {
         var csrftoken = Cookies.get('csrftoken');
-        console.log(csrftoken)
         function csrfSafeMethod(method) {
             return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
         }
