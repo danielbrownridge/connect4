@@ -10,7 +10,7 @@
     {% endfor %}
 </ul>
 {% else %}
-<a href="">Create a new game</a>
+<a href="{% url 'connect4:game-new' %}">Create a new game</a>
 {% endif %}
 
 <h3>Join a game</h3>

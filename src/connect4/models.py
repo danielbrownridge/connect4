@@ -8,7 +8,7 @@ class Game(models.Model):
             blank=True, null=True)
     winner = models.ForeignKey(User, on_delete=models.CASCADE, related_name='winner',
             blank=True, null=True)
-    finished = models.BooleanField()
+    finished = models.BooleanField(default=False)
     created = models.DateTimeField(auto_now_add=True)
     moves = ArrayField(models.IntegerField(), size=42, default=list, blank=True)
 

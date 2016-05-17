@@ -39,6 +39,12 @@ class SignupView(View):
         self.context['signup_form'] = signup_form
         return render(request, self.template, self.context)
 
+class NewGameView(LoginRequiredMixin, View):
+    def get(self, request):
+        game = Game(player1=request.user)
+        game.save()
+        return HttpResponseRedirect(reverse('connect4:games'))
+
 class GamesView(LoginRequiredMixin, View):
     login_url = 'connect4:login'
     template = 'connect4/games.html'
