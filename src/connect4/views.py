@@ -71,6 +71,7 @@ class GameDataView(LoginRequiredMixin, View):
             json = {
                 'moves': game.moves,
                 'player': player,
+                'finished': game.finished,
             }
         except Game.DoesNotExist:
             json = {}
@@ -82,11 +83,18 @@ class GameDataView(LoginRequiredMixin, View):
             game.moves = moves
             if request.POST.get('finished') == 'true':
                 game.finished = True
+                win = request.POST.get('win')
+                print(win)
+                if win == '0':
+                    game.winner = game.player1
+                elif win == '1':
+                    game.winner = game.player2
+                else:
+                    game.winner = None
             game.save()
             return JsonResponse( {"result":"success"} )
         except Game.DoesNotExist:
             return JsonResponse( {"result":"failure"} )
-
 
 class PlayView(LoginRequiredMixin, View):
     login_url = 'connect4:login'

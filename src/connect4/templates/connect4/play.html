@@ -7,6 +7,7 @@
 <script>
     var moves = [];
     var user;
+    var finished;
     var turn;
     var COLUMNS = 7;
     var ROWS = 6;
@@ -99,30 +100,67 @@
         mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
     }
 
+    function win(x, y) {
+        console.log('start: ' + x + ',' + y);
+        lines = [
+            [[1,1],[-1,-1]],
+            [[1,0],[-1,0]],
+            [[1,-1],[-1,+1]],
+            [[0,-1]]
+        ];
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
+            var longest = 1;
+            for (var j = 0; j < line.length; j++) {
+                var direction = line[j];
+                var p_x = x;
+                var p_y = y;
+                var q_x = p_x + direction[0];
+                var q_y = p_y + direction[1];
+                while( q_x >= 0 && q_y >= 0 && q_x < 7 && q_y < 6
+                    && user == board[q_x][q_y] ) {
+                    longest++;
+                    p_x = q_x;
+                    p_y = q_y;
+                    q_x = p_x + direction[0];
+                    q_y = p_y + direction[1];
+                }
+                if (longest >= 4) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+
     function onMouseClick( event ) {
         event.preventDefault();
         mouse.x = ( event.clientX / window.innerWidth ) * 2 - 1;
         mouse.y = - ( event.clientY / window.innerHeight ) * 2 + 1;
         raycaster.setFromCamera( mouse, camera, 0, 1 );
         var intersects = raycaster.intersectObjects( scene.children );
-        if (intersects.length > 0) {
+        console.log('finished:' + finished)
+        if (intersects.length > 0 && !finished) {
             column = intersects[0].object.column;
             
             turn = moves.length % 2;
             if(user == turn) {
                 if(add_coin(column, user)) {
+                    var row = board[column].length - 1;
                     moves.push(column);
-                    console.log(moves.length)
-                    if(moves.length == 7 * 6) {
+                    data = {}
+                    if(win(column, row)) {
+                        finished = true;
+                        data['win'] = user;
+                        alert('Win!');
+                    } else if (moves.length == 7 * 6) {
                         finished = true;
                         alert('Draw!');
                     } else {
                         finished = false;
                     }
-                    data = {
-                        'moves': moves,
-                        'finished': finished,
-                    }
+                    data['moves'] = moves;
+                    data['finished'] = finished;
                     $.post( "{% url 'connect4:game-data' game_id %}", data, function( response ) {
                     });
                 }
@@ -162,6 +200,7 @@
 
     var pollGameData = function () {
         $.get( "{% url 'connect4:game-data' game_id %}", function( response ) { 
+            finished = response.finished;
             if (moves.length == 0) {
                 moves = response.moves;
                 user = response.player;
